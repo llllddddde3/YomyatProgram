@@ -54,6 +54,8 @@ namespace YomyatProgram.Views
                     AgencyId = checkIsAgency.Checked ? (int)comboAgency.SelectedValue : null
                 });
                 context.SaveChanges();
+                txtPrice.Text = txtTitle.Text = "";
+                checkIsAgency.Checked = checkIsDebt.Checked = false;
                 MessageBox.Show("تمت الاضافة بنجاح", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)

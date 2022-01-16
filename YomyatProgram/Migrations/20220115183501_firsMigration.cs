@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace YomyatProgram.Migrations
 {
-    public partial class init : Migration
+    public partial class firsMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,38 +36,40 @@ namespace YomyatProgram.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Payments",
+                name: "Packages",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostsCount = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Packages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Value = table.Column<double>(type: "float", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsSalaries = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Debts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    value = table.Column<double>(type: "float", nullable: false),
-                    AgencyId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Debts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Debts_Agencies_AgencyId",
-                        column: x => x.AgencyId,
-                        principalTable: "Agencies",
+                        name: "FK_Payments_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -78,39 +80,52 @@ namespace YomyatProgram.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Titel = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReceiptType = table.Column<int>(type: "int", nullable: false),
-                    RelatedId = table.Column<int>(type: "int", nullable: true),
+                    RelatedId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<double>(type: "float", nullable: false),
-                    DebtId = table.Column<int>(type: "int", nullable: false)
+                    IsDebt = table.Column<bool>(type: "bit", nullable: false),
+                    AgencyId = table.Column<int>(type: "int", nullable: true),
+                    AccountId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Receipts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Receipts_Debts_DebtId",
-                        column: x => x.DebtId,
-                        principalTable: "Debts",
+                        name: "FK_Receipts_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Receipts_Agencies_AgencyId",
+                        column: x => x.AgencyId,
+                        principalTable: "Agencies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Debts_AgencyId",
-                table: "Debts",
-                column: "AgencyId");
+                name: "IX_Payments_AccountId",
+                table: "Payments",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Receipts_DebtId",
+                name: "IX_Receipts_AccountId",
                 table: "Receipts",
-                column: "DebtId");
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Receipts_AgencyId",
+                table: "Receipts",
+                column: "AgencyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "Packages");
 
             migrationBuilder.DropTable(
                 name: "Payments");
@@ -119,7 +134,7 @@ namespace YomyatProgram.Migrations
                 name: "Receipts");
 
             migrationBuilder.DropTable(
-                name: "Debts");
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "Agencies");

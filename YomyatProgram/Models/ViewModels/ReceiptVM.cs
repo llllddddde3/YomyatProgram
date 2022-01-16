@@ -13,6 +13,7 @@ namespace YomyatProgram.Models.ViewModels
         public double Value { get; set; }
         public string ReceiptType { get; set; } = string.Empty;
         public string Related { get; set; } = string.Empty;
+        public int AgencyId { get; set; }
         public string AgencyName { get; set; } = string.Empty;
         public string Date { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;

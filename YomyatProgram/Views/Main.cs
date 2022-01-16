@@ -89,23 +89,47 @@ namespace YomyatProgram.Views
             {
                 var recipts = context.Receipts.Where(x => !x.IsDebt && x.Date.Month == date.Month && x.Date.Year == date.Year).ToList();
                 var payments = context.Payments.Where(x => x.Date.Month == date.Month && x.Date.Year == date.Year);
+                int i = 1;
+                foreach (var item in recipts)
+                    Views.Add(new MainVM
+                    {
+                        Id = item.Id,
+                        No = i++,
+                        Title = item.Title,
+                        Type = "مقبوضات",
+                        Value = item.Value.ToString(),
+                        Date = item.Date,
+                        UserName = Statics.CurrentAccount.FullName
+                    });
+                foreach (var item in payments)
+                    Views.Add(new MainVM
+                    {
+                        Id = item.Id,
+                        No = i++,
+                        Title = item.Title,
+                        Type = "مدفوعات",
+                        Value = item.Value.ToString(),
+                        Date = item.Date,
+                        UserName = Statics.CurrentAccount.FullName
+                    });
+                Views = Views.OrderBy(x => x.Date).ToList();
                 Views.Add(new MainVM
                 {
-                    No = 1,
+                    No = i++,
                     Title = "مجموع المقبوضات",
                     Type = "مقبوضات",
                     Value = recipts.Sum(x => x.Value).ToString()
                 });
                 Views.Add(new MainVM
                 {
-                    No = 2,
+                    No = i++,
                     Title = "مجموع المدفوعات",
                     Type = "مدفوعات",
                     Value = payments.Where(x => !x.IsSalaries).Sum(x => x.Value).ToString()
                 });
                 Views.Add(new MainVM
                 {
-                    No = 3,
+                    No = i++,
                     Title = "الرواتب",
                     Type = "مدفوعات",
                     Value = payments.Where(x => x.IsSalaries).Sum(x => x.Value).ToString()

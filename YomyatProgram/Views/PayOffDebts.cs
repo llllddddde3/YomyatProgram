@@ -19,6 +19,7 @@ namespace YomyatProgram.Views
     {
         MyContext context = new MyContext();
         int selectedId;
+        List<Receipt> receipts = new List<Receipt>();
         public string GetRelated(int relatedId) => context.Packages.First(x => x.Id == relatedId).Title;
         public payOffDebts()
         {
@@ -27,10 +28,21 @@ namespace YomyatProgram.Views
 
         private void payOffDebts_Load(object sender, EventArgs e)
         {
-           var receipts = context.Receipts.Where(x => x.IsDebt)
-                .Include(x=>x.Agency)
-                .Include(x=>x.Account)
-                .AsNoTracking().ToList();
+            receipts = context.Receipts.Where(x => x.IsDebt)
+                 .Include(x => x.Agency)
+                 .Include(x => x.Account)
+                 .AsNoTracking().ToList();
+            if (!receipts.Any())
+            {
+                btnFilter.Enabled = btnPayOffAll.Enabled = false;
+                return;
+            }
+            FillFilter(receipts);
+            FillGrid(receipts);
+        }
+
+        private void FillGrid(List<Receipt> receipts)
+        {
             List<ReceiptVM> receiptVMs = new List<ReceiptVM>();
             foreach (var item in receipts)
             {
@@ -41,13 +53,16 @@ namespace YomyatProgram.Views
                     Value = item.Value * (-1),
                     ReceiptType = ReceiptTypeArabic.Titles[(int)item.ReceiptType],
                     Related = item.RelatedId != 0 && item.ReceiptType == ReceiptType.Packages ? GetRelated(item.RelatedId) : "-",
+                    AgencyId = item.AgencyId.Value,
                     AgencyName = item.AgencyId.HasValue ? item.Agency.Name : "-",
                     Date = item.Date.ToShortDateString(),
                     UserName = item.Account.FullName
                 });
             }
+            txtSumDebts.Text = (-1 * receipts.Sum(x => x.Value)).ToString();
             grdDebt.DataSource = receiptVMs;
             grdDebt.Columns["Id"].Visible = false;
+            grdDebt.Columns["AgencyId"].Visible = false;
             grdDebt.Columns["Title"].HeaderText = "العنوان";
             grdDebt.Columns["Value"].HeaderText = "القيمة";
             grdDebt.Columns["ReceiptType"].HeaderText = "النوع";
@@ -55,6 +70,21 @@ namespace YomyatProgram.Views
             grdDebt.Columns["AgencyName"].HeaderText = "اسم الوكيل";
             grdDebt.Columns["Date"].HeaderText = "التاريخ";
             grdDebt.Columns["UserName"].HeaderText = "اسم المدخل";
+            btnFilter.Enabled = btnPayOffAll.Enabled = true;
+        }
+
+        private void FillFilter(List<Receipt> receipts)
+        {
+            var agencies = new List<Agency>();
+            agencies.Add(new Agency { Id = 0, Name = "الكل" });
+            agencies.AddRange(receipts.Select(x => x.Agency).ToList());
+            comboAgency.DataSource = agencies;
+            comboAgency.DisplayMember = "Name";
+            comboAgency.ValueMember = "Id";
+            var filterReceipts = new List<string>();
+            filterReceipts.Add("الكل");
+            filterReceipts.AddRange(receipts.Select(x => x.Title).ToList());
+            ComboTitles.DataSource = receipts.Select(x => new { Title = x.Title }).ToList();
         }
 
         private void grdDebt_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -89,17 +119,66 @@ namespace YomyatProgram.Views
                 return;
             try
             {
-                var debt = context.Receipts.First(x => x.Id == selectedId);
-                debt.Value *= (-1);
-                debt.IsDebt = false;
-                debt.AccountId = Statics.CurrentAccount.Id;
-                context.SaveChanges();
+                PayOff(selectedId);
+                txtTitle.Text =txtValue.Text = string.Empty;
                 MessageBox.Show("تمت تسديد الدفعة", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 payOffDebts_Load(sender, e);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void PayOff(int id)
+        {
+            var debt = context.Receipts.First(x => x.Id == id);
+            debt.Value *= (-1);
+            debt.IsDebt = false;
+            debt.AccountId = Statics.CurrentAccount.Id;
+            context.SaveChanges();
+        }
+
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
+            if (!receipts.Any())
+                return;
+            int agencyId = (int)comboAgency.SelectedValue;
+            if (agencyId == 0 && ComboTitles.SelectedText == "الكل")
+            {
+                FillGrid(receipts);
+            }
+            else if (agencyId != 0 && ComboTitles.SelectedText == "الكل")
+            {
+                FillGrid(receipts.Where(x => x.AgencyId == agencyId).ToList());
+            }
+            else if (agencyId == 0 && ComboTitles.SelectedText != "الكل")
+            {
+                FillGrid(receipts.Where(x => x.Title == ComboTitles.SelectedText).ToList());
+            }
+            else if (agencyId != 0 && ComboTitles.SelectedText != "الكل")
+            {
+                FillGrid(receipts.Where(x => x.AgencyId == agencyId && x.Title == ComboTitles.SelectedText).ToList());
+            }
+        }
+
+        private void btnPayOffAll_Click(object sender, EventArgs e)
+        {
+            if (!receipts.Any())
+                return;
+            var result = MessageBox.Show(this, "هل انت متأكد من تسديد الدفعات جميعها ؟", "إنتبه", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.RtlReading);
+            if (result != DialogResult.Yes)
+                return;
+            try
+            {
+                var allReceipts = (List<ReceiptVM>)grdDebt.DataSource;
+                foreach (var item in allReceipts)
+                    PayOff(item.Id);
+                MessageBox.Show("تمت تسديد الدفعات", "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                payOffDebts_Load(sender, e);
+            }
+            catch (Exception)
+            {
             }
         }
     }

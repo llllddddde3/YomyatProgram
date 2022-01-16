@@ -11,6 +11,6 @@ namespace YomyatProgram.Models
         public double Value { get; set; }
         public DateTime Date { get; set; }
         public bool IsSalaries { get; set; }
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }
