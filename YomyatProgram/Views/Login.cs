@@ -37,5 +37,15 @@ namespace YomyatProgram.Views
                 MessageBox.Show("خطأ في اسم المستخدم أو كلمة المرور", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void txtPass_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            switch (e.KeyChar)
+            {
+                case '\r':
+                    btnLogin.PerformClick();
+                    break;
+            }
+        }
     }
 }

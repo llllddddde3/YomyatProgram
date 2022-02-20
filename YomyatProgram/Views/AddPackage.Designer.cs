@@ -29,6 +29,7 @@ namespace YomyatProgram.Views
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddPackage));
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.txtPrice = new System.Windows.Forms.TextBox();
@@ -40,80 +41,45 @@ namespace YomyatProgram.Views
             // 
             // label2
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(354, 133);
+            resources.ApplyResources(this.label2, "label2");
             this.label2.Name = "label2";
-            this.label2.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.label2.Size = new System.Drawing.Size(36, 15);
-            this.label2.TabIndex = 23;
-            this.label2.Text = "السعر";
             // 
             // label1
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(348, 66);
+            resources.ApplyResources(this.label1, "label1");
             this.label1.Name = "label1";
-            this.label1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.label1.Size = new System.Drawing.Size(42, 15);
-            this.label1.TabIndex = 22;
-            this.label1.Text = "العنوان";
             // 
             // txtPrice
             // 
-            this.txtPrice.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.txtPrice.Location = new System.Drawing.Point(84, 129);
+            resources.ApplyResources(this.txtPrice, "txtPrice");
             this.txtPrice.Name = "txtPrice";
-            this.txtPrice.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.txtPrice.Size = new System.Drawing.Size(244, 23);
-            this.txtPrice.TabIndex = 21;
             // 
             // txtTitle
             // 
-            this.txtTitle.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.txtTitle.Location = new System.Drawing.Point(84, 63);
+            resources.ApplyResources(this.txtTitle, "txtTitle");
             this.txtTitle.Name = "txtTitle";
-            this.txtTitle.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.txtTitle.Size = new System.Drawing.Size(244, 23);
-            this.txtTitle.TabIndex = 20;
             // 
             // btnAddPost
             // 
-            this.btnAddPost.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnAddPost.Location = new System.Drawing.Point(149, 171);
+            resources.ApplyResources(this.btnAddPost, "btnAddPost");
             this.btnAddPost.Name = "btnAddPost";
-            this.btnAddPost.Size = new System.Drawing.Size(134, 23);
-            this.btnAddPost.TabIndex = 19;
-            this.btnAddPost.Text = "اضافة";
             this.btnAddPost.UseVisualStyleBackColor = true;
             this.btnAddPost.Click += new System.EventHandler(this.btnAddPost_Click);
             // 
             // label3
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(334, 100);
+            resources.ApplyResources(this.label3, "label3");
             this.label3.Name = "label3";
-            this.label3.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.label3.Size = new System.Drawing.Size(81, 15);
-            this.label3.TabIndex = 25;
-            this.label3.Text = "عدد المنشورات";
             // 
             // txtCount
             // 
-            this.txtCount.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.txtCount.Location = new System.Drawing.Point(84, 97);
+            resources.ApplyResources(this.txtCount, "txtCount");
             this.txtCount.Name = "txtCount";
-            this.txtCount.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.txtCount.Size = new System.Drawing.Size(244, 23);
-            this.txtCount.TabIndex = 24;
             // 
             // AddPackage
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(461, 243);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.txtCount);
             this.Controls.Add(this.label2);
@@ -122,8 +88,6 @@ namespace YomyatProgram.Views
             this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.btnAddPost);
             this.Name = "AddPackage";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "إضافة باقة";
             this.ResumeLayout(false);
             this.PerformLayout();
 

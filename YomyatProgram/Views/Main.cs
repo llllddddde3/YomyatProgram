@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using YomyatProgram.Models;
@@ -178,7 +179,7 @@ namespace YomyatProgram.Views
                 {
                     double value = 0;
                     string title = "";
-                    if (i == 5) 
+                    if (i == 5)
                     {
                         title = "الربع الأول";
                         value = payments.Where(x => x.Date.Month == 1 || x.Date.Month == 2 || x.Date.Month == 3).Sum(x => x.Value);
@@ -309,5 +310,14 @@ namespace YomyatProgram.Views
             Application.Exit();
         }
 
+        private void txtBalance_Leave(object sender, EventArgs e)
+        {
+            double amount = 0.0d;
+            if (Double.TryParse(txtBalance.Text, NumberStyles.Currency, null, out amount))
+            {
+                txtBalance.Text = amount.ToString("C");
+            }
+
+        }
     }
 }

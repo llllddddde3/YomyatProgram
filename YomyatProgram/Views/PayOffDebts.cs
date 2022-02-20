@@ -53,7 +53,7 @@ namespace YomyatProgram.Views
                     Value = item.Value * (-1),
                     ReceiptType = ReceiptTypeArabic.Titles[(int)item.ReceiptType],
                     Related = item.RelatedId != 0 && item.ReceiptType == ReceiptType.Packages ? GetRelated(item.RelatedId) : "-",
-                    AgencyId = item.AgencyId.Value,
+                    AgencyId = item.AgencyId.HasValue ? item.AgencyId.Value : default,
                     AgencyName = item.AgencyId.HasValue ? item.Agency.Name : "-",
                     Date = item.Date.ToShortDateString(),
                     UserName = item.Account.FullName
@@ -77,14 +77,18 @@ namespace YomyatProgram.Views
         {
             var agencies = new List<Agency>();
             agencies.Add(new Agency { Id = 0, Name = "الكل" });
-            agencies.AddRange(receipts.Select(x => x.Agency).ToList());
+            foreach (var item in receipts.Where(x => x.AgencyId.HasValue))
+            {
+                if (!agencies.Any(x => x.Id == item.AgencyId))
+                    agencies.Add(item.Agency);
+            }
             comboAgency.DataSource = agencies;
             comboAgency.DisplayMember = "Name";
             comboAgency.ValueMember = "Id";
             var filterReceipts = new List<string>();
             filterReceipts.Add("الكل");
-            filterReceipts.AddRange(receipts.Select(x => x.Title).ToList());
-            ComboTitles.DataSource = receipts.Select(x => new { Title = x.Title }).ToList();
+            filterReceipts.AddRange(receipts.Select(x => x.Title).Distinct().ToList());
+            ComboTitles.DataSource = filterReceipts;
         }
 
         private void grdDebt_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -144,21 +148,21 @@ namespace YomyatProgram.Views
             if (!receipts.Any())
                 return;
             int agencyId = (int)comboAgency.SelectedValue;
-            if (agencyId == 0 && ComboTitles.SelectedText == "الكل")
+            if (agencyId == 0 && ComboTitles.Text == "الكل")
             {
                 FillGrid(receipts);
             }
-            else if (agencyId != 0 && ComboTitles.SelectedText == "الكل")
+            else if (agencyId != 0 && ComboTitles.Text == "الكل")
             {
                 FillGrid(receipts.Where(x => x.AgencyId == agencyId).ToList());
             }
-            else if (agencyId == 0 && ComboTitles.SelectedText != "الكل")
+            else if (agencyId == 0 && ComboTitles.Text != "الكل")
             {
-                FillGrid(receipts.Where(x => x.Title == ComboTitles.SelectedText).ToList());
+                FillGrid(receipts.Where(x => x.Title == ComboTitles.Text).ToList());
             }
-            else if (agencyId != 0 && ComboTitles.SelectedText != "الكل")
+            else if (agencyId != 0 && ComboTitles.Text != "الكل")
             {
-                FillGrid(receipts.Where(x => x.AgencyId == agencyId && x.Title == ComboTitles.SelectedText).ToList());
+                FillGrid(receipts.Where(x => x.AgencyId == agencyId && x.Title == ComboTitles.Text).ToList());
             }
         }
 
